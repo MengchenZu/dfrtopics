@@ -11,16 +11,17 @@
 #' @seealso \code{\link{read_dfr_citations}}
 #' @export
 #' 
-read_dfr_metadata <- function (filenames) {
-    all_rows <- do.call(rbind, lapply(filenames, read_dfr_citations))
-    # deduplicate
-    result <- unique(all_rows)
-
-    if(any(duplicated(result$id))) {
-        warning("Some rows have the same id")
-    }
-
-    result
+read_dfr_metadata <- function (filenames) 
+{
+  all_rows <- do.call(rbind, lapply(filenames, read_dfr_citations))
+  # deduplicate
+  result <- unique(all_rows)
+    
+  if (any(duplicated(result$id))) {
+    warning("Some rows have the same id")
+  }
+    
+  result
 }
 
 #' Read a single \code{citations.CSV} or \code{citations.tsv} file.
@@ -62,39 +63,31 @@ read_dfr_metadata <- function (filenames) {
 #' @seealso \code{\link{read_dfr_metadata}}, \code{\link{pubdate_Date}}
 #' @export
 #' 
-read_dfr_citations <- function (filename, strip.white=TRUE, ...) {
-    if (grepl("\\.tsv", filename, ignore.case=TRUE)) {
-        # new (2014) metadata format: TSV
-
-        # nefarious trailing comma now a nefarious trailing tab
-        cols <- scan(filename, nlines=1, what=character(), sep="\t", quiet=TRUE)
-        if (length(cols) != 13) {
-            warning("Expected 13 tab-delimited columns but found ",
-                    length(cols), "\nResults may not be valid")
-        }
-        cols <- c(cols, "unused")
-
-        result <- read.table(filename, header=FALSE, skip=1, sep="\t",
-                             col.names=cols, quote="", as.is=TRUE,
-                             comment="", strip.white=strip.white, ...)
-        result <- result[ , -length(cols)]
-    } else {
-        # assume old (2013) metadata format: CSV
-
-        # the nefarious trailing comma
-        cols <- scan(filename, nlines=1, what=character(), sep=",", quiet=TRUE)
-        cols <- c(cols, "unused")
-
-        result <- read.csv(filename, skip=1, header=FALSE, col.names=cols,
-                           quote="", as.is=TRUE, comment="",
-                           strip.white=strip.white, ...)
-        result <- result[ , -length(cols)]
+read_dfr_citations <- function (filename, strip.white = TRUE, ...) {
+  if (grepl("\\.tsv", filename, ignore.case = TRUE)) {
+    # for tsv files
+    cols <- scan(filename, nlines = 1, what = character(), 
+                 sep = "\t", quiet = TRUE)
+    if (length(cols) != 13) {
+      warning("Expected 13 tab-delimited columns but found ", 
+              length(cols), "\nResults may not be valid")
     }
-
-    result <- dplyr::tbl_df(result)
-    result$pubdate <- pubdate_Date(result$pubdate)
-    result$type <- factor(result$type)
-    result
+    result <- read.table(filename, header = FALSE, skip = 1, 
+                         sep = "\t", col.names = cols, quote = "", as.is = TRUE, 
+                         comment = "", strip.white = strip.white, fill= TRUE, ...)
+  }
+  else {
+    # for csv files
+    cols <- scan(filename, nlines = 1, what = character(), 
+                 sep = ",", quiet = TRUE)
+    result <- read.csv(filename, skip = 1, header = FALSE, 
+                       col.names = cols, quote = "", as.is = TRUE, comment = "", 
+                       strip.white = strip.white, fill= TRUE, ...)
+  }
+  result <- dplyr::tbl_df(result)
+  # result$pubdate <- pubdate_Date(result$pubdate)
+  result$type <- factor(result$type)
+  result
 }
 
     
