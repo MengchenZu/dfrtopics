@@ -950,6 +950,7 @@ sampling state:         ", yesno("ss")
 #' @param top_words_file topic top word data frame file (CSV)
 #' @param topic_words_file topic-word matrix file (CSV)
 #' @param metadata_file metadata file (CSV or TSV)
+#' @param metadata_folder metadata folder contain files (CSV or TSV)
 #' @param params_file modeling parameters file (read with
 #'   \code{\link[base]{dget}})
 #' @param state_file CSV with simplified Gibbs sampling state (created by
@@ -968,6 +969,7 @@ load_mallet_model <- function(
         top_words_file=NULL,
         topic_words_file=NULL,
         metadata_file=NULL,
+        metadata_folder=NULL,
         params_file=NULL,
         state_file=NULL) {
 
@@ -985,7 +987,15 @@ load_mallet_model <- function(
     }
 
     if (!is.null(metadata_file)) {
-        metadata <- read_dfr_metadata(metadata_file)
+        metadata <- my_read_dfr_metadata(metadata_file)
+    }
+    else if (!is.null(metadata_folder)) {
+        myfiles <- list.files(path = metadata_folder, pattern = ".tsv", full.names = TRUE)
+        metadata <- NULL
+        for(metadata_file in myfiles) {
+                meta_part <- my_read_dfr_metadata(metadata_file)
+                metadata <- rbind(metadata, meta_part)
+        }
     } else {
         metadata <- NULL
     }
@@ -1033,6 +1043,7 @@ load_mallet_model <- function(
 #' @param f directory name
 #' @param load_topic_words logical: load the full topic-word matrix?
 #' @param metadata_file document metadata file(s) (optional)
+#' @param metadata_folder document metadata folder contain metadata files
 #'
 #' @return \code{mallet_model} object
 #'
@@ -1042,7 +1053,7 @@ load_mallet_model <- function(
 #' @export
 load_mallet_model_directory <- function (f, load_topic_words=FALSE,
                                     load_sampling_state=FALSE,
-                                    metadata_file=NULL) {
+                                    metadata_file=NULL, metadata_folder=NULL) {
     tw <- if (load_topic_words) file.path(f, "topic_words.csv") else NULL
     ss <- if (load_sampling_state) file.path(f, "state.csv") else NULL
     load_mallet_model(doc_topics_file=file.path(f, "doc_topics.csv"),
@@ -1052,7 +1063,8 @@ load_mallet_model_directory <- function (f, load_topic_words=FALSE,
                  params_file=file.path(f, "params.txt"),
                  topic_words_file=tw,
                  state_file=ss,
-                 metadata_file=metadata_file)
+                 metadata_file=metadata_file,
+                 metadata_folder=metadata_folder)
 }
 
 #' Load a model with files from dfrtopics 0.1
