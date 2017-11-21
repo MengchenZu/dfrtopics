@@ -13,7 +13,7 @@ Every function has online help in R. For a fairly detailed introduction to what 
 This is too messy for CRAN. The easiest way to install is to first install the [devtools](http://cran.r-project.org/web/packages/devtools/index.html) package, and then use it to install this package straight from github:
 
 ```R
-devtools::install_github("agoldst/dfrtopics")
+devtools::install_github("MengchenZu/dfrtopics")
 ```
 
 (You don't need to have git or a github account for this to work.) I have been profligate with dependencies on other R packages. This package contains C++ code, so R must be able to build it from source. Mac users should install XCode; Windows users need [RTools](https://cran.r-project.org/bin/windows/Rtools/).
