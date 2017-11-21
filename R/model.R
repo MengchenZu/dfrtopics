@@ -987,13 +987,13 @@ load_mallet_model <- function(
     }
 
     if (!is.null(metadata_file)) {
-        metadata <- my_read_dfr_metadata(metadata_file)
+        metadata <- read_dfr_metadata(metadata_file)
     }
     else if (!is.null(metadata_folder)) {
         myfiles <- list.files(path = metadata_folder, pattern = ".tsv", full.names = TRUE)
         metadata <- NULL
         for(metadata_file in myfiles) {
-                meta_part <- my_read_dfr_metadata(metadata_file)
+                meta_part <- read_dfr_metadata(metadata_file)
                 metadata <- rbind(metadata, meta_part)
         }
     } else {
