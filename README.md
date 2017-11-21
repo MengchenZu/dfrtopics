@@ -1,4 +1,6 @@
 # dfrtopics
+## This dfrtopics code has been changed for a further development.
+## Wait to update the Documentation and examples
 
 This small R package provides bits and pieces to help make and explore topic models of text, especially word-count data like that available from JSTOR's [Data for Research](http://dfr.jstor.org) (DfR) service. It uses [MALLET](http://mallet.cs.umass.edu) to run the models.
 
